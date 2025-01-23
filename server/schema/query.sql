@@ -33,8 +33,6 @@ CREATE TABLE Courses (
     courseDescription TEXT,
     instructorId INT NOT NULL,
     whatYouWillLearn TEXT,
-    courseContent TEXT,
-    sectionId INT,
     price DECIMAL(10, 2),
     thumbnail VARCHAR(255),
     tagId INT,
@@ -76,9 +74,7 @@ CREATE TABLE Tags (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT,
-    courseId INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (CourseId) REFERENCES Courses(id)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE CourseProgress (
@@ -112,7 +108,7 @@ CREATE TABLE Invoices (
 );
 
 CREATE TABLE Otp (
-	email VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
     otp INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

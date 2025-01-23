@@ -6,6 +6,7 @@ const { sendPasswordChangeMail } = require('../mails/updatedPassword');
 const {validateEmail} = require('../utlis/validateEmail');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const encryptData  = require('../utlis/encrypt');
 require('dotenv').config();
 
 exports.sendOtp = async (req, res) => {
@@ -129,16 +130,18 @@ exports.loginHandler = async (req, res) => {
         res.cookie('StudyNotion', token, {
             expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10 days
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+            secure: process.env.NODE_ENV === 'production',
         });
 
-        res.status(200).json({ 
+        const responseData = { 
             success: true, 
             user_id: userData.id, 
             token, 
             message: 'Login successful' 
-        });
+        }
+        const encryptedResult = encryptData(responseData);
 
+        res.status(200).json({encryptedResult});
     } catch (err) {
         console.error('Login Error:', err.message);
         res.status(500).json({ 
