@@ -5,8 +5,8 @@ CREATE TABLE Users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    phoneNumber VARCHAR(15),
     password VARCHAR(255) NOT NULL,
+    user_img VARCHAR(255),
     accountType ENUM('Admin', 'Instructor', 'Student'),
     active BOOLEAN DEFAULT TRUE,
     approve BOOLEAN DEFAULT FALSE,
@@ -19,10 +19,9 @@ CREATE TABLE Profile (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId INT NOT NULL,
     gender ENUM('Male', 'Female', 'Other'),
-    DOB DATE,
+    dateOfBirth DATE,
     about TEXT,
     contactNumber VARCHAR(15),
-    user_img VARCHAR(255),
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (userId) REFERENCES Users(id)
 );
@@ -35,16 +34,22 @@ CREATE TABLE Courses (
     whatYouWillLearn TEXT,
     price DECIMAL(10, 2),
     thumbnail VARCHAR(255),
-    tagId INT,
+    category VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (instructorId) REFERENCES Users(id)
+);
+
+CREATE TABLE Category (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE Section (
     id INT AUTO_INCREMENT PRIMARY KEY,
     sectionName VARCHAR(255) NOT NULL,
     courseId INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (courseId) REFERENCES Courses(id)
 );
 
@@ -56,6 +61,7 @@ CREATE TABLE SubSection (
     description TEXT,
     videoURL VARCHAR(255),
     additionalURL VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (SectionId) REFERENCES Section(id)
 );
 
@@ -75,6 +81,15 @@ CREATE TABLE Tags (
     name VARCHAR(100) NOT NULL,
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE TaggedCourse (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tagId INT NOT NULL,
+    courseId INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tagId) REFERENCES Tags(id),
+    FOREIGN KEY (courseId) REFERENCES Courses(id)
 );
 
 CREATE TABLE CourseProgress (

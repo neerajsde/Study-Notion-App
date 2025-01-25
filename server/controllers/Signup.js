@@ -4,10 +4,10 @@ const {validateEmail} = require('../utlis/validateEmail');
 
 exports.signupHandler = async (req, res) => {
     try {
-        const { name, email, password, phone, role, otp } = req.body;
+        const { name, email, password, role, otp } = req.body;
 
         // Check if all fields are provided
-        if (!name || !email || !password || !phone || !role || !otp) {
+        if (!name || !email || !password || !role || !otp) {
             return res.status(400).json({
                 success: false,
                 message: 'All fields are required',
@@ -17,7 +17,6 @@ exports.signupHandler = async (req, res) => {
         // Trim inputs to avoid unnecessary issues
         const trimmedName = name.trim();
         const trimmedEmail = email.trim();
-        const trimmedPhone = phone.trim();
         const trimmedRole = role.trim();
 
         // Validate email format
@@ -30,25 +29,17 @@ exports.signupHandler = async (req, res) => {
 
         const Pool = getPool();
 
-        // Fetch user, phone, and OTP details in parallel
-        const [[user], [phoneExists], [otpRecord]] = await Promise.all([
+        // Fetch user, and OTP details in parallel
+        const [[user], [otpRecord]] = await Promise.all([
             Pool.query(`SELECT id FROM users WHERE email = ?`, [trimmedEmail]),
-            Pool.query(`SELECT id FROM users WHERE PhoneNumber = ?`, [trimmedPhone]),
             Pool.query(`SELECT * FROM otp WHERE email = ? ORDER BY Created_at DESC LIMIT 1`, [trimmedEmail]),
         ]);
 
-        // Check if user or phone number already exists
+        // Check if user email already exists
         if (user.length > 0) {
             return res.status(409).json({
                 success: false,
                 message: 'User already exists',
-            });
-        }
-
-        if (phoneExists.length > 0) {
-            return res.status(409).json({
-                success: false,
-                message: 'Phone number already exists',
             });
         }
 
@@ -91,8 +82,8 @@ exports.signupHandler = async (req, res) => {
 
             // Insert new user into the database
             const [insertResult] = await connection.query(
-                'INSERT INTO users (name, email, PhoneNumber, password, AccountType) VALUES (?,?,?,?,?)',
-                [trimmedName, trimmedEmail, trimmedPhone, hashedPassword, trimmedRole]
+                'INSERT INTO users (name, email, password, AccountType) VALUES (?,?,?,?)',
+                [trimmedName, trimmedEmail, hashedPassword, trimmedRole]
             );
             const userId = insertResult.insertId;
 
