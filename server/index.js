@@ -3,10 +3,16 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
-const route = require('./router/route');
 const path = require('path');
 const { connectToDatabase } = require('./config/database');
 require('dotenv').config();
+// Import route modules
+const userRoutes = require('./routes/User');
+const profileRoutes = require('./routes/Profile');
+const courseRoutes = require('./routes/Course');
+const ratingRoutes = require('./routes/Ratings');
+const contactRoutes = require('./routes/Contact');
+// const paymentRoutes = require('./routes/Payments');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,9 +31,6 @@ connectToDatabase().catch((err) => {
   process.exit(1);
 });
 
-// API routes
-app.use('/api/v1', route);
-
 // Serve static React files
 const buildPath = path.join(__dirname, 'public');
 app.use(express.static(buildPath));
@@ -39,6 +42,14 @@ app.get('/', (req, res) => {
 
 // Static file serving
 app.use('/public', express.static(path.join(__dirname, 'public')));
+
+// API routes
+app.use('/api/v1/user', userRoutes);
+app.use('/api/v1/profile', profileRoutes);
+app.use('/api/v1/course', courseRoutes);
+app.use('/api/v1/rating', ratingRoutes);
+app.use('/api/v1/contact', contactRoutes);
+// app.use('/api/v1/payment', paymentRoutes);
 
 // Error handling
 app.use((req, res, next) => {

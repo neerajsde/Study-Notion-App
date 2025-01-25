@@ -19,7 +19,7 @@ CREATE TABLE Profile (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId INT NOT NULL,
     gender ENUM('Male', 'Female', 'Other'),
-    dateOfBirth DATE,
+    dateOfBirth VARCHAR(50),
     about TEXT,
     contactNumber VARCHAR(15),
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -42,7 +42,9 @@ CREATE TABLE Courses (
 
 CREATE TABLE Category (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    name VARCHAR(255) NOT NULL,
+    date DATE DEFAULT (CURRENT_DATE),
+    time TIME DEFAULT (CURRENT_TIME)
 );
 
 CREATE TABLE Section (
@@ -69,9 +71,10 @@ CREATE TABLE RatingAndReviews (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId INT NOT NULL,
     courseId INT NOT NULL,
-    rating DECIMAL(3, 2) NOT NULL,
+    rating DECIMAL(3, 1) NOT NULL,
     review TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date DATE DEFAULT (CURRENT_DATE),
+    time TIME DEFAULT (CURRENT_TIME),
     FOREIGN KEY (UserId) REFERENCES Users(id),
     FOREIGN KEY (CourseId) REFERENCES Courses(id)
 );
@@ -105,7 +108,8 @@ CREATE TABLE CourseEnroll (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId INT NOT NULL,
     courseId INT NOT NULL,
-    enroll_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    enroll_date DATE DEFAULT (CURRENT_DATE),
+    enroll_time TIME DEFAULT (CURRENT_TIME),
     FOREIGN KEY (UserId) REFERENCES Users(id),
     FOREIGN KEY (CourseId) REFERENCES Courses(id)
 );
@@ -117,7 +121,8 @@ CREATE TABLE Invoices (
     price DECIMAL(10, 2),
     address VARCHAR(255),
     pincode VARCHAR(10),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date DATE DEFAULT (CURRENT_DATE),
+    time TIME DEFAULT (CURRENT_TIME),
     FOREIGN KEY (UserId) REFERENCES Users(id),
     FOREIGN KEY (CourseId) REFERENCES Courses(id)
 );
@@ -126,6 +131,19 @@ CREATE TABLE Otp (
     email VARCHAR(255) NOT NULL,
     otp INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE ContactUs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT,
+    firstName VARCHAR(50) NOT NULL,
+    lastName VARCHAR(50) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(15) NOT NULL,
+    message TEXT,
+    date DATE DEFAULT (CURRENT_DATE),
+    time TIME DEFAULT (CURRENT_TIME),
+    FOREIGN KEY (userId) REFERENCES Users(id)
 );
 
 SHOW TABLES;

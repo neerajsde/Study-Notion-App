@@ -75,3 +75,68 @@ exports.getAllCategory = async (req, res) => {
         });
     }
 };
+
+//categoryPageDetails 
+exports.categoryPageDetails = async (req, res) => {
+    try {
+        // Get category from request parameters
+        const { category } = req.params;
+
+        const Pool = getPool();
+
+        // Get the selected category details
+        const [[selectedCategory]] = await Pool.query(
+            `SELECT * FROM Courses WHERE category = ?`,
+            [category]
+        );
+
+        // Validation for category existence
+        if (!selectedCategory) {
+            return res.status(404).json({
+                success: false,
+                message: 'Data Not Found',
+            });
+        }
+
+        // Get courses from different categories
+        const [differentCategories] = await Pool.query(
+            `SELECT * FROM Courses WHERE category != ?`,
+            [category]
+        );
+
+        // Get top 10 selling courses with course details using JOIN
+        const [topSellingProducts] = await Pool.query(
+            `SELECT 
+                c.id AS courseId, 
+                c.courseName AS name, 
+                c.category, 
+                c.price, 
+                COUNT(ce.userId) AS enrollmentCount
+            FROM 
+                CourseEnroll ce
+            JOIN 
+                Courses c ON ce.courseId = c.id
+            GROUP BY 
+                c.id, c.courseName, c.category, c.price
+            ORDER BY 
+                enrollmentCount DESC
+            LIMIT 10`
+        );
+
+        // Send the response with all gathered data
+        return res.status(200).json({
+            success: true,
+            data: {
+                selectedCategory,
+                differentCategories,
+                topSellingProducts
+            },
+        });
+    } catch (error) {
+        console.error("Error Occurred While Getting Course Category: ", error.message);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};

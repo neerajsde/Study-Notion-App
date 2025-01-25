@@ -164,7 +164,7 @@ exports.getCourseDetails = async (req, res) => {
 };
 
 //getAllCourses handler function
-exports.showAllCourses = async (req, res) => {
+exports.getAllCourses = async (req, res) => {
     try {
         const pool = await getPool();
 
